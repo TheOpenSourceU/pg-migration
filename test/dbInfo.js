@@ -14,8 +14,8 @@ describe('dbInfo', function () {
   it('builds out table if missing', function () {
     return conn
       .none('drop table if exists pg_migration_dbinfo')
-      .then(function() {
-        console.log('dropped old table... running dbInfo');
+      .then(function(r) {
+        console.log('dropped old table... running dbInfo', r);
         return dbInfo(conn);
       })
       .then(function (resultObj) {
@@ -24,4 +24,5 @@ describe('dbInfo', function () {
         assert.equal("0.0.0", resultObj.version);
       });
   });
+
 });
