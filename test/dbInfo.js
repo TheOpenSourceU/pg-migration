@@ -25,4 +25,17 @@ describe('dbInfo', function () {
       });
   });
 
+  it('returns version', function () {
+    return conn
+    .none("UPDATE pg_migration_dbinfo set value = '9.8.7' WHERE key = 'db_version';")
+    .then(function(r) {
+      console.log('dropped old table... running dbInfo', r);
+      return dbInfo(conn);
+    })
+    .then(function (resultObj) {
+      console.log('received results', resultObj);
+      assert.isDefined(resultObj);
+      assert.equal("9.8.7", resultObj.version);
+    });
+  });
 });
