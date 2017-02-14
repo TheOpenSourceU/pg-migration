@@ -12,6 +12,17 @@ const tables = {
     tables: ['ALTER TABLE example ADD "desc" VARCHAR(200) NULL;'], //maybe alter table.
     data: ["INSERT INTO example(key, value) VALUES ('test2', 'yes2')"],
     indexes: ["DROP INDEX example_value_index CASCADE;"]
+  },
+  '1.0.2': {
+    tables: [],
+    data: (function() {
+      var ar = [];
+      for(var i = 0; i < 1000; i++) {
+        ar.push( "INSERT INTO example(key, value) VALUES ('m-{0}', 'payload-{0}') RETURNING key".replace(/\{0\}/g, i) );
+      }
+      return ar;
+    })(),
+    indexes: []
   }
 };
 
