@@ -23,15 +23,15 @@ describe('dbConnection', function () {
 
   it('Constructs with string', function () {
     var conn = dbConnection("postgresql://localhost:5432/pg_migrate");
-    conn.one('SELECT version();')
+    return conn.one('SELECT version();')
       .then(function(r) {
         assert.isNotNull(r);
         assert.isNotNull(r.version);
       })
       .error(function(er){
         assert.fail(er);
+        throw er;
       });
-    return conn;
   });
 
   it('Constructs with object', function () {
@@ -47,14 +47,14 @@ describe('dbConnection', function () {
       }
     };
     var conn = dbConnection(conObj);
-    conn.one('SELECT version();')
+    return conn.one('SELECT version();')
       .then(function(r) {
         assert.isNotNull(r);
         assert.isNotNull(r.version);
       })
       .error(function(er){
         assert.fail(er);
+        throw er;
       });
-    return conn;
   });
 });
