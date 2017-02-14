@@ -26,7 +26,13 @@ describe('dbMigrate', function () {
   it('basic migration', function() {
     var result = dbMigrate(dbConnection, basicMigrations);
     result.then(function(batchResult){
+      console.log('[unit test then] batchResult', batchResult);
+      console.log('                 *** SUCESS **');
       assert.equal(batchResult.result, true);
+    }).catch(function(er){
+      console.log('[unit test catch] batchResult', er);
+      assert.fail(er);
     });
+    return result; //the promise must be returned.
   });
 });
