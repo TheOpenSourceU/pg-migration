@@ -25,14 +25,13 @@ describe('dbMigrate', function () {
 
   it('basic migration', function() {
     var result = dbMigrate(dbConnection, basicMigrations);
-    result.then(function(batchResult){
+    return result.then(function(batchResult){
       console.log('[unit test then] batchResult', batchResult);
       console.log('                 *** SUCESS **');
-      assert.equal(batchResult.result, true);
-    }).catch(function(er){
-      console.log('[unit test catch] batchResult', er);
-      assert.fail(er);
+      assert.isTrue(batchResult["1.0.0"].result);
+      assert.isTrue(batchResult["1.0.1"].result);
+      assert.isTrue(batchResult["1.0.2"].result);
+      // TODO: Consider revisions to output. For, however, it is correct.
     });
-    return result; //the promise must be returned.
   });
 });
