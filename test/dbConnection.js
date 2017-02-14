@@ -31,6 +31,7 @@ describe('dbConnection', function () {
       .error(function(er){
         assert.fail(er);
       });
+    return conn;
   });
 
   it('Constructs with object', function () {
@@ -54,5 +55,6 @@ describe('dbConnection', function () {
       .error(function(er){
         assert.fail(er);
       });
+    return conn;
   });
 });
