@@ -28,10 +28,10 @@ describe('dbMigrate', function () {
     return result.then(function(batchResult){
       console.log('[unit test then] batchResult', batchResult);
       console.log('                 *** SUCESS **');
+      assert.isTrue(batchResult.overallResult);
       assert.isTrue(batchResult["1.0.0"].result);
       assert.isTrue(batchResult["1.0.1"].result);
       assert.isTrue(batchResult["1.0.2"].result);
-      // TODO: Consider revisions to output. For, however, it is correct.
     });
   });
 });
