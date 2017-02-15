@@ -1,5 +1,6 @@
 var assert = require('chai').assert;
-var conn = require('../lib/dbConnection')("postgresql://localhost:5432/pg_migrate");
+var connStr = require('../test-data/localConnectionString');
+var conn = require('../lib/dbConnection')(connStr);
 var dbInfo = require('../lib/dbInfo');
 
 describe('dbInfo', function () {

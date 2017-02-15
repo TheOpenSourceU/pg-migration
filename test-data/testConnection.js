@@ -1,2 +1,3 @@
 var dbConnection = require('../lib/dbConnection');
-module.exports = dbConnection('postgresql://localhost:5432/pg_migrate');
+var connStr = require('../test-data/localConnectionString');
+module.exports = dbConnection(connStr);
