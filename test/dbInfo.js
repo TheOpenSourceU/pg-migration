@@ -4,12 +4,17 @@ var conn = require('../lib/dbConnection')(connStr);
 var dbInfo = require('../lib/dbInfo');
 
 describe('dbInfo', function () {
-  before(function() {
+  // before(function() {
+  //
+  // });
+  //
+  // beforeEach(function() {
+  //
+  // });
 
-  });
-
-  beforeEach(function() {
-
+  after(function() {
+    return conn
+      .none("UPDATE pg_migration_dbinfo set value = '0.0.0' WHERE key = 'db_version';")
   });
 
   it('builds out table if missing', function () {

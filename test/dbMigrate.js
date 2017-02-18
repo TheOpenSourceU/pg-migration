@@ -34,4 +34,15 @@ describe('dbMigrate', function () {
       assert.isTrue(batchResult["1.0.2"].result);
     });
   });
+
+  it('track deployed DB version in DB', function() {
+    var result = dbMigrate(dbConnection, basicMigrations); //3 versions.
+    return result.then(function(batchResult) {
+      return dbConnection
+        .one("SELECT value from pg_migration_dbinfo where key = 'db_version';")
+        .then(function(result) {
+          assert.equal(result.value, '1.0.2');
+        });
+    });
+  });
 });
