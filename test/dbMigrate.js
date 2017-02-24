@@ -79,6 +79,10 @@ describe('dbMigrate', function () {
         return batchResult;
       })
       .then(function(batchResult) {
+
+        assert.equal(3, dbConnection.tx.callCount);
+        dbConnection.tx.reset(); //reset the spy.
+
         var clonedMigrations = _.cloneDeep(basicMigrations);
         clonedMigrations['1.0.3'] = {
           tables: ["CREATE TABLE secondtable( id INTEGER SERIAL PRIMARY KEY NOT NULL, name VARCHAR(500), something1 INTEGER, something2 NUMERIC );"],
@@ -90,6 +94,10 @@ describe('dbMigrate', function () {
         return result2
           .then(function(result) {
             assert.isTrue(result.overallResult);
+
+            assert.equal(1, dbConnection.tx.callCount);
+            dbConnection.tx.reset(); //reset the spy.
+
             return result;
           })
           .then(function(results) {
