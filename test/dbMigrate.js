@@ -3,12 +3,34 @@ var dbConnection = require('../test-data/testConnection');
 var dbMigrate = require('../lib/dbMigrate');
 var basicMigrations = require('../test-data/simpleForwardMigrations');
 var dbInfo = require('../lib/dbInfo');
+var _ = require('lodash');
+
+var $npm = {
+  debug: require('debug')('db-migration:test:dbMigrate'),
+  sinon: require('sinon')
+};
 
 describe('dbMigrate', function () {
+
   beforeEach(function() {
+    // Where we left off here is how to spy on this correctly.
+    //  I'm thinking of going through another project. See how they do it.
+    // this.restore = { //doesn't work
+    //   tx: dbConnection.tx,
+    //   one: dbConnection.one
+    // }; //save refs
+
+    //dbConnection.tx = $npm.sinon.spy(dbConnection.tx);
+    //dbConnection.one = $npm.sinon.spy(dbConnection.one);
+    $npm.sinon.spy(dbConnection, 'tx');
+    assert.equal(dbConnection.tx.callCount, 0);
+    //
+    //
+
     return dbConnection
       .none('drop table if exists example;')
       .then(function() {
+        console.log('beforeEach :: dropped example');
         return dbInfo(dbConnection);
       }).catch(function(er){
         console.log('afterEach:catch', er);
@@ -18,6 +40,9 @@ describe('dbMigrate', function () {
   afterEach(function() {
     return dbConnection
       .none('drop table if exists example;')
+      .then(function() {
+        console.log('afterEach :: dropped example');
+      })
       .catch(function(er){
         console.log('afterEach:catch', er);
       });
@@ -44,5 +69,36 @@ describe('dbMigrate', function () {
           assert.equal(result.value, '1.0.2');
         });
     });
+  });
+
+  it('Performs incremental DB deployments', function() {
+    var result = dbMigrate(dbConnection, basicMigrations); //to 1.0.2
+    return result
+      .then(function(batchResult) {
+        assert.isTrue(batchResult.overallResult);
+        return batchResult;
+      })
+      .then(function(batchResult) {
+        var clonedMigrations = _.cloneDeep(basicMigrations);
+        clonedMigrations['1.0.3'] = {
+          tables: ["CREATE TABLE secondtable( id INTEGER SERIAL PRIMARY KEY NOT NULL, name VARCHAR(500), something1 INTEGER, something2 NUMERIC );"],
+          data: [],
+          indexes: ["CREATE UNIQUE INDEX 'secondTable_something1_uindex' ON secondtable (something1);"]
+        };
+
+        var result2 = dbMigrate(dbConnection, clonedMigrations);
+        return result2
+          .then(function(result) {
+            assert.isTrue(result.overallResult);
+            return result;
+          })
+          .then(function(results) {
+            return dbConnection
+              .one("SELECT value from pg_migration_dbinfo where key = 'db_version';")
+              .then(function(result) {
+                assert.equal(result.value, '1.0.3');
+              });
+          })
+      });
   });
 });
