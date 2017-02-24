@@ -13,22 +13,14 @@ var $npm = {
 describe('dbMigrate', function () {
 
   beforeEach(function() {
-    // Where we left off here is how to spy on this correctly.
-    //  I'm thinking of going through another project. See how they do it.
-    // this.restore = { //doesn't work
-    //   tx: dbConnection.tx,
-    //   one: dbConnection.one
-    // }; //save refs
-
-    //dbConnection.tx = $npm.sinon.spy(dbConnection.tx);
-    //dbConnection.one = $npm.sinon.spy(dbConnection.one);
     $npm.sinon.spy(dbConnection, 'tx');
     assert.equal(dbConnection.tx.callCount, 0);
-    //
-    //
 
     return dbConnection
       .none('drop table if exists example;')
+      .then(function() {
+        return dbConnection.none("UPDATE pg_migration_dbinfo set value = '0.0.0' WHERE key = 'db_version';");
+      })
       .then(function() {
         console.log('beforeEach :: dropped example');
         return dbInfo(dbConnection);
@@ -40,6 +32,9 @@ describe('dbMigrate', function () {
   afterEach(function() {
     return dbConnection
       .none('drop table if exists example;')
+      .then(function() {
+        return dbConnection.none("UPDATE pg_migration_dbinfo set value = '0.0.0' WHERE key = 'db_version';");
+      })
       .then(function() {
         console.log('afterEach :: dropped example');
       })
@@ -85,9 +80,9 @@ describe('dbMigrate', function () {
 
         var clonedMigrations = _.cloneDeep(basicMigrations);
         clonedMigrations['1.0.3'] = {
-          tables: ["CREATE TABLE secondtable( id INTEGER SERIAL PRIMARY KEY NOT NULL, name VARCHAR(500), something1 INTEGER, something2 NUMERIC );"],
+          tables: ["CREATE TABLE secondtable( id SERIAL PRIMARY KEY NOT NULL, name VARCHAR(500), something1 INTEGER, something2 NUMERIC );"],
           data: [],
-          indexes: ["CREATE UNIQUE INDEX 'secondTable_something1_uindex' ON secondtable (something1);"]
+          indexes: ["CREATE UNIQUE INDEX secondTable_something1_uindex ON secondtable (something1);"]
         };
 
         var result2 = dbMigrate(dbConnection, clonedMigrations);
