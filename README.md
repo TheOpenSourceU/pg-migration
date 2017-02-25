@@ -58,4 +58,17 @@ Assuming the above commands all execute successfully, the following should pass
 
 ```npm test```
 
-And you should get results similar to the following:
+And you should get results similar to the following. The these results were
+trimmed:
+
+```
+[...]
+index
+    ✓ no arguments throws exception
+    ✓ missing migration argument
+    ✓ missing connection argument
+    ✓ calls dbMigrate with options; returns a promise
+
+
+  17 passing (2s)
+  ```
