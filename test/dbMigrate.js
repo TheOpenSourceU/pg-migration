@@ -7,37 +7,34 @@ var _ = require('lodash');
 
 var $npm = {
   debug: require('debug')('db-migration:test:dbMigrate'),
-  sinon: require('sinon')
+  sinon: require('sinon'),
+  promise: require('bluebird')
 };
 
 describe('dbMigrate', function () {
+
+  const resetDb = function() {
+    const resetPromises = [
+      dbConnection.none('drop table if exists example;'),
+      dbConnection.none("UPDATE pg_migration_dbinfo set value = '0.0.0' WHERE key = 'db_version';"),
+      dbConnection.none('drop table if exists secondtable;')
+    ];
+    return $npm.promise.all(resetPromises);
+  };
 
   beforeEach(function() {
     $npm.sinon.spy(dbConnection, 'tx');
     assert.equal(dbConnection.tx.callCount, 0);
 
-    return dbConnection
-      .none('drop table if exists example;')
-      .then(function() {
-        return dbConnection.none("UPDATE pg_migration_dbinfo set value = '0.0.0' WHERE key = 'db_version';");
-      })
-      .then(function() {
-        console.log('beforeEach :: dropped example');
-        return dbInfo(dbConnection);
-      }).catch(function(er){
+    return resetDb()
+      .catch(function(er){
         console.log('afterEach:catch', er);
       });
   });
 
   afterEach(function() {
-    return dbConnection
-      .none('drop table if exists example;')
-      .then(function() {
-        return dbConnection.none("UPDATE pg_migration_dbinfo set value = '0.0.0' WHERE key = 'db_version';");
-      })
-      .then(function() {
-        console.log('afterEach :: dropped example');
-      })
+    dbConnection.tx.restore();
+    return resetDb()
       .catch(function(er){
         console.log('afterEach:catch', er);
       });
