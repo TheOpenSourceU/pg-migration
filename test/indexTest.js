@@ -1,7 +1,8 @@
-var assert = require('chai').assert;
-var pg_migration = require('../lib/index');
-var sinon = require('sinon');
-var _ = require('lodash');
+const assert = require('chai').assert;
+const pg_migration = require('../lib/index');
+const sinon = require('sinon');
+const _ = require('lodash');
+var connStr = require('../test-data/localConnectionString');
 
 describe('index', function () {
   var _saveEnv = null;
@@ -18,32 +19,42 @@ describe('index', function () {
   });
 
   it('missing migration argument', function() {
-    var opt = {
+    const opt = {
       connection: 'fake connection string'
     };
-    var f = function() { pg_migration(opt); };
+    const f = function() { pg_migration(opt); };
     assert.throws(f);
   });
 
   it('missing connection argument', function() {
     delete process.env.DATABASE_URL;
-    var opt = {
+    const opt = {
       migrations: {}
     };
-    var f = function() { pg_migration(opt); };
+    const f = function() { pg_migration(opt); };
     assert.throws(f);
   });
 
   it('calls dbMigrate with options; returns a promise', function() {
-    var opt = {
+    const opt = {
       connection: 'fake connection string',
       migrations: {}
     };
-    var resultPromise = pg_migration(opt);
+    const resultPromise = pg_migration(opt);
 
     return resultPromise.then(function(r) {
       assert.isTrue(r.overallResult);
     });
   });
 
+  it('handle pre-created pgp connection object', function() {
+    const opt = {
+      connection: require('pg-promise')({noLocking:true})(connStr),
+      migrations: {}
+    };
+    const resultPromise = pg_migration(opt);
+    return resultPromise.then(function(r) {
+      assert.isTrue(r.overallResult);
+    });
+  });
 });
