@@ -1,0 +1,23 @@
+{
+  "source": {
+    "include": [
+      "lib"
+    ]
+  },
+  "templates": {
+    "default": {
+      "layoutFile": "jsdoc/layout.html",
+      "staticFiles": {
+        "include": []
+      }
+    }
+  },
+  "opts": {
+    "recurse": true,
+    "destination": "./pg-migration-doc",
+    "encoding": "utf8"
+  },
+  "plugins": [
+
+  ]
+}

@@ -4,7 +4,8 @@
   "description": "pg database migration tool",
   "main": "lib/index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "doc": "./node_modules/.bin/jsdoc -c ./jsdoc/jsDoc.json ./jsdoc/README.md"
   },
   "keywords": [
     "pg",
@@ -36,6 +37,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
-    "sinon": "^1.17.7"
+    "sinon": "^1.17.7",
+    "jsdoc": "^3.5.0"
   }
 }
