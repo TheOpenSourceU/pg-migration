@@ -8,7 +8,7 @@
     "default": {
       "layoutFile": "jsdoc/layout.html",
       "staticFiles": {
-        "include": []
+        "include": ["./jsdoc/style.css"]
       }
     }
   },
@@ -18,6 +18,6 @@
     "encoding": "utf8"
   },
   "plugins": [
-
+    ["plugins/markdown"]
   ]
 }
